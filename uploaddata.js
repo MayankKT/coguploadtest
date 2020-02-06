@@ -17,6 +17,12 @@ const subscription_key = process.env.TEXT_ANALYTICS_SUBSCRIPTION_KEY;
 const endpoint = process.env.TEXT_ANALYTICS_EndPoint
 
 
+// authentication start
+
+const creds = new CognitiveServicesCredentials.ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': subscription_key } });
+const textAnalyticsClient = new TextAnalyticsAPIClient.TextAnalyticsClient(creds, endpoint);
+
+
 
 //const fileNameArray = ["test.pptx"]
 exports.getData = function(answer, obj,cb) {
