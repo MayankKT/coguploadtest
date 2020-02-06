@@ -5,6 +5,18 @@ const path = require("path");
 var request = require('request');
 const mongodb = require('mongodb');
 const assert = require('assert');
+// constant end
+
+// key variables start 
+
+// if (process.env.NODE_ENV !== "production") {
+//     require("dotenv").config();
+// }
+
+const subscription_key = process.env.TEXT_ANALYTICS_SUBSCRIPTION_KEY;
+const endpoint = process.env.TEXT_ANALYTICS_EndPoint
+
+
 
 //const fileNameArray = ["test.pptx"]
 exports.getData = function(answer, obj,cb) {
