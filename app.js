@@ -3,12 +3,12 @@ const app = express();
 var port = process.env.PORT || 5000;
 var cors = require('cors');
 
-//const fs = require("fs");
-//var multer = require('multer')
+const fs = require("fs");
+var multer = require('multer')
 var { getDocuments, getSowDocuments } = require('./Samples/textAnalytics');
 
-//var { getData } = require('./uploaddata.js')
-app.use(cors())
+var { getData } = require('./uploaddata.js');
+app.use(cors());
 
 app.get('/IPKit', (req, res) => {
     res.send('Hello Words !!');
