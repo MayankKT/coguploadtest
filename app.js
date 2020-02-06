@@ -62,75 +62,75 @@ app.get('/SOWDocs', function (req, res) {
 
 
 
-// var storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, 'public')
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, file.originalname)
-//     }
-// })
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+})
 
-//var upload = multer({ storage: storage }).single('file')
+var upload = multer({ storage: storage }).single('file')
 
 
 app.post('/uploadsow', function (req, res) {
    
-    return res.send('will come soon');
-    // try {
 
-    //     let fileName = req.query.filetype;
-    //     if (fileName) {
-    //         console.log('req.query : ')
-    //         upload(req, res, function (err) {
-    //             if (err instanceof multer.MulterError) {
-    //                 console.log('1 : ')
-    //                 return res.status(500).json(err)
-    //             } else if (err) {
-    //                    console.log('2 : ')
-    //                 return res.status(500).json(err)
-    //             }
-    //             else {
-    //                 console.log('req.query : ')
-    //                 getData('sow', fileName, (msg) => {
-    //                     return res.status(200).send(fileName + " uploaded successfully...");
-    //                 });
-    //             }
+    try {
+
+        let fileName = req.query.filetype;
+        if (fileName) {
+            console.log('req.query : ')
+            upload(req, res, function (err) {
+                if (err instanceof multer.MulterError) {
+                    console.log('1 : ')
+                    return res.status(500).json(err)
+                } else if (err) {
+                       console.log('2 : ')
+                    return res.status(500).json(err)
+                }
+                else {
+                    console.log('req.query : ')
+                    getData('sow', fileName, (msg) => {
+                        return res.status(200).send(fileName + " uploaded successfully...");
+                    });
+                }
 
 
-    //         })
-    //     }
-    //     else {
-    //         return res.status(500).send("Please uplod a file")
-    //     }
+            })
+        }
+        else {
+            return res.status(500).send("Please uplod a file")
+        }
 
-    // } catch (e) {
-    //     return res.status(500).json(e)
-    // }
+    } catch (e) {
+        return res.status(500).json(e)
+    }
 });
 
 
 
 app.post('/uploadipkit', function (req, res) {
-    return res.send('will come soon');
-//     try {
-//     //console.log('upload', req);
-//     let fileName = req.query.filetype;
-//     upload(req, res, function (err) {
-//         if (err instanceof multer.MulterError) {
-//             return res.status(500).json(err)
-//         } else if (err) {
-//             return res.status(500).json(err)
-//         }else{
-//           //  console.log('req.query : ')
-//             getData('ipkit', fileName, (msg) => {
-//                 return res.status(200).send(fileName + " uploaded successfully...");
-//             });
-//         }
-//     })
-// } catch (e) {
-//     return res.status(500).json(e)
-// }
+    
+    try {
+    //console.log('upload', req);
+    let fileName = req.query.filetype;
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(500).json(err)
+        } else if (err) {
+            return res.status(500).json(err)
+        }else{
+          //  console.log('req.query : ')
+            getData('ipkit', fileName, (msg) => {
+                return res.status(200).send(fileName + " uploaded successfully...");
+            });
+        }
+    })
+} catch (e) {
+    return res.status(500).json(e)
+}
 });
 
 
