@@ -9,9 +9,10 @@ const assert = require('assert');
 
 // key variables start 
 
-if (process.env.NODE_ENV !== "production") {
-    require("dotenv").config();
-}
+// if (process.env.NODE_ENV !== "production") {
+//     require("dotenv").config();
+// }
+
 const subscription_key = process.env.TEXT_ANALYTICS_SUBSCRIPTION_KEY;
 const endpoint = process.env.TEXT_ANALYTICS_EndPoint
 
