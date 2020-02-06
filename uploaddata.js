@@ -13,8 +13,8 @@ const assert = require('assert');
 //     require("dotenv").config();
 // }
 
-const subscription_key = process.env.TEXT_ANALYTICS_SUBSCRIPTION_KEY;
-const endpoint = process.env.TEXT_ANALYTICS_EndPoint
+const subscription_key = '9ee36486c3eb4d42a68112fd4e0486af';//process.env.TEXT_ANALYTICS_SUBSCRIPTION_KEY;
+const endpoint = 'https://southcentralus.api.cognitive.microsoft.com';process.env.TEXT_ANALYTICS_EndPoint
 
 
 // authentication start
@@ -22,7 +22,10 @@ const endpoint = process.env.TEXT_ANALYTICS_EndPoint
 const creds = new CognitiveServicesCredentials.ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': subscription_key } });
 const textAnalyticsClient = new TextAnalyticsAPIClient.TextAnalyticsClient(creds, endpoint);
 
+// authentication end
 
+const directoryPathSOW = path.resolve("./public");
+const directoryIPKit = path.resolve("./public");
 
 //const fileNameArray = ["test.pptx"]
 exports.getData = function(answer, obj,cb) {
