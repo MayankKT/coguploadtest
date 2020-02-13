@@ -47,7 +47,6 @@ exports.getDocuments = function (callBack, param) {
     //const dbName = 'campusdocinfonew';
     // Use connect method to connect to the server
     MongoClient.connect(url, function (err, client) {
-        //console.log('t', err);
         assert.equal(null, err);
         console.log("Connected successfully to server");
 
@@ -64,22 +63,21 @@ exports.getDocuments = function (callBack, param) {
 
         //let returnObj = [];
         d.toArray(function (err, docs) {
-            // console.log('docs',docs);
             let retDocs = [];
             //----------------1 start
-            console.log('param : ',param);
             let sowKey1 = JSON.parse(param);
             if (sowKey1 && sowKey1.length > 0) {
                 for (var i = 0; i < sowKey1.length; i++) {
                     var data = docs.filter(obj => obj.keydata.find(o => o.toLowerCase().includes(sowKey1[i].toLowerCase())) != undefined)
                     if (data && data.length > 0) {
                         data.forEach(m => {
+                            console.log('M:',m);
                             if (retDocs.find(o => o.url.toLowerCase() == m.url.toLowerCase()) == undefined) {
                                 let objReturn = {}
                                 objReturn["keydata"] = m.keydata;
                                 objReturn["url"] = m.url;
+                                objReturn["language"] = m.language ? m.language : '';
                                 retDocs.push(objReturn);
-                              
                             }
                         })
 
@@ -105,7 +103,6 @@ exports.getDocuments = function (callBack, param) {
             //     }
             // })
             //----------------2 end
-            // console.log('docs',docs);
             assert.equal(err, null);
             // console.log('param : ', param);
             console.log("Found the following records");
@@ -162,6 +159,7 @@ exports.getSowDocuments = function (callBack, param) {
                 if (param.trim().toLowerCase() == '' || obj.keydata.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase()))) {
                     objReturn["keydata"] = obj.keydata;
                     objReturn["url"] = obj.url;
+                    objReturn["language"] = obj.language ? obj.language : '';
                     retDocs.push(objReturn);
                 }
             })

@@ -20,7 +20,7 @@ var mime = require('mime');
 
 app.get('/download', function (req, res) {
     console.log('download');
-    let file = './Samples/data/' + req.query.file;
+    let file = './public/' + req.query.file;
 
     var filename = path.basename(file);
     var mimetype = mime.lookup(file);

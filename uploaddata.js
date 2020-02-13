@@ -5,6 +5,8 @@ const path = require("path");
 var request = require('request');
 const mongodb = require('mongodb');
 const assert = require('assert');
+const uuidv4 = require('uuid/v4');
+
 // constant end
 
 // key variables start 
@@ -28,57 +30,130 @@ const directoryPathSOW = path.resolve("./public");
 const directoryIPKit = path.resolve("./public");
 
 //const fileNameArray = ["test.pptx"]
-exports.getData = function(answer, obj,cb) {
+exports.getData = function (answer, obj, cb) {
     if (true || fileType == 'word') {
         let directoryPath = answer.toLocaleLowerCase() == 'sow' ? directoryPathSOW : directoryIPKit;
         //.forEach((obj, inex) => {
         var fileName = obj;
-        console.log(" F : ",directoryPath + '\\' + fileName)
         docx.extract(directoryPath + '\\' + fileName).then(function (res, err) {
             if (err) {
                 console.log(err)
             }
             else if (res) {
                 let myPDFString = res;
+                let doc = [];
+                let myData = getStringArray(doc, myPDFString);
+                let lan = 'English';
+
+                async function languageDetection(client) {
+                    // console.log('start');
+                    // let options = {
+                    //     method: 'POST',
+                    //     baseUrl: 'https://api.cognitive.microsofttranslator.com',
+                    //     url: 'translate',
+                    //     qs: {
+                    //       'api-version': '3.0',
+                    //       'from':'hi',
+                    //       'to': ['en']
+                    //     },
+                    //     headers: {
+                    //       'Ocp-Apim-Subscription-Key': '1863029dc91c45f4a1d90dad9953caa9',
+                    //       'Content-type': 'application/json'
+                    //     },
+                    //     body: [{
+                    //           'text':myPDFString
+                    //     }],
+                    //     json: true,
+                    // };
+
+                    // request(options, function(err, res, body){
+                    //     console.log(JSON.stringify(body, null, 4));
+                    // });
+
+                    console.log("1. This will detect the languages of the inputs.");
+
+                    const languageInput = {
+                        documents: [
+                            { id: "1", text: ((myData && myData.length > 0) ? myData[0] : '') },
+                        ]
+                    };
+
+                    const languageResult = await client.detectLanguage({
+                        languageBatchInput: languageInput
+                    });
+
+                    languageResult.documents.forEach(document => {
+                        document.detectedLanguages.forEach(language => {
+                            console.log(`ID : ${document.id} Language :  ${language.name}`)
+                            lan = language.name;
+                        }
+                        );
+                    });
+
+                }
+
+                languageDetection(textAnalyticsClient);
 
                 //keyPhraseExtraction 
                 async function keyPhraseExtraction(client) {
-                    //console.log("2. This will extract key phrases from the sentences.");
-                    let doc = [];
-                    //console.log('myPDFString', myPDFString);
-                    let myData = getStringArray(doc, myPDFString);
-                    let docs = [];
-                    if (myData && myData.length > 0) {
-                        myData.forEach((obj, index) => {
-                            if (obj.length > 100)
-                                docs.push({
-                                    language: "en",
-                                    id: "" + (index),
-                                    text: obj
-                                })
-                        });
-                    }
-                    const keyPhrasesInput = {
-                        documents: docs
-                    };
-                    console.log('f');
+                    if (lan.toLowerCase() == 'english') {
+                        let docs = [];
+                        if (myData && myData.length > 0) {
+                            myData.forEach((obj, index) => {
+                                if (obj.length > 100)
+                                    docs.push({
+                                        language: "en",
+                                        id: "" + (index),
+                                        text: obj
+                                    })
+                            });
+                        }
+                        const keyPhrasesInput = {
+                            documents: docs
+                        };
 
-                    if (answer.toLocaleLowerCase() == 'sow') {
-                        await saveDataToDBAfterProcess(JSON.stringify(keyPhrasesInput), fileName, cb);
+                        if (answer.toLocaleLowerCase() == 'sow') {
+                            console.log('lan', lan);
+                            await saveDataToDBAfterProcess(JSON.stringify(keyPhrasesInput), fileName, cb, lan);
+                        }
+                        else {
+                            const keyPhraseResult = await client.keyPhrases({
+                                multiLanguageBatchInput: keyPhrasesInput
+                            });
+                            if (keyPhraseResult && keyPhraseResult.documents && keyPhraseResult.documents.length > 0) {
+                                let distinct = getDistinctData(keyPhraseResult.documents);
+                                //await saveBlobData('key', myContent, jsonFileName);
+                                console.log('lan', lan);
+                                await saveDataToDB(distinct, fileName, cb, lan);
+
+                            }
+                        }
                     }
                     else {
-                        const keyPhraseResult = await client.keyPhrases({
-                            multiLanguageBatchInput: keyPhrasesInput
+                        let options = {
+                            method: 'POST',
+                            baseUrl: 'https://api.cognitive.microsofttranslator.com',
+                            url: 'translate',
+                            qs: {
+                                'api-version': '3.0',
+                                'from': 'hi',
+                                'to': ['en']
+                            },
+                            headers: {
+                                'Ocp-Apim-Subscription-Key': '1863029dc91c45f4a1d90dad9953caa9',
+                                'Content-type': 'application/json'
+                            },
+                            body: [{
+                                'text': myPDFString
+                            }],
+                            json: true,
+                        };
+
+                        request(options, function (err, res, body) {
+                            console.log(JSON.stringify(body, null, 4));
+                            let doc = [];
+                            let myData = getStringArray(doc, myPDFString);
                         });
-                        console.log('f1');
-                        if (keyPhraseResult && keyPhraseResult.documents && keyPhraseResult.documents.length > 0) {
-                            let distinct = getDistinctData(keyPhraseResult.documents);
-                            //await saveBlobData('key', myContent, jsonFileName);
-                            console.log('f1 distinct', distinct);
-                            console.log('f2');
-                            await saveDataToDB(distinct, fileName,cb);
-                          
-                        }
                     }
                 }
                 keyPhraseExtraction(textAnalyticsClient);
@@ -278,7 +353,7 @@ const env = {
 const dbs = "campusdbtest";
 const collection = "campusdoctest";
 
-async function saveDataToDBAfterProcess(data, fileName, cb) {
+async function saveDataToDBAfterProcess(data, fileName, cb, lan) {
     var options = {
         'method': 'POST',
         'url': 'https://campuskeywordrank.azurewebsites.net/api/recon-engine?code=E/frPQJmbkSwh1bsfjkzLTUvSynITSItY597U/da3sOKrBw0eEbTWg==',
@@ -295,10 +370,8 @@ async function saveDataToDBAfterProcess(data, fileName, cb) {
     const dbName = dbs + '_sow';
     const dbCollection = collection + '_sow';
 
-    //console.log('options',options);
     request(options, function (error, response) {
         if (error) throw new Error(error);
-        // console.log(response.body);
         var MongoClient = mongodb.MongoClient;
         // Connection URL
         //const url = 'mongodb://localhost:27017';
@@ -306,7 +379,6 @@ async function saveDataToDBAfterProcess(data, fileName, cb) {
 
         // Use connect method to connect to the server
         MongoClient.connect(url, function (err, client) {
-            //console.log('t', err);
             assert.equal(null, err);
             console.log("Connected successfully to server");
 
@@ -321,15 +393,14 @@ async function saveDataToDBAfterProcess(data, fileName, cb) {
                 let keyPhasesObj = JSON.parse(keyPhases);
                 if (keyPhasesObj && keyPhasesObj.keyPhrases) {
                     let keys = Object.keys(keyPhasesObj.keyPhrases);
-                    console.log('keys', keys);
                     // Insert some documents
-                    collection.insertMany([{ "keydata": keys, "data": response.body, "url": fileName }], function (err, result) {
+                    collection.insertMany([{ "keydata": keys, "data": response.body, "url": fileName, language: lan }], function (err, result) {
                         assert.equal(err, null);
                         assert.equal(1, result.result.n);
                         assert.equal(1, result.ops.length);
                         console.log("Inserted 1 documents into the collection");
                         client.close();
-                         if(cb) cb('done');
+                        if (cb) cb('done');
                     });
                 }
             }
@@ -341,7 +412,7 @@ async function saveDataToDBAfterProcess(data, fileName, cb) {
 
 
 
-async function saveDataToDB(data, fileName,cb) {
+async function saveDataToDB(data, fileName, cb, lan) {
     console.log(data, '\n', fileName);
     var MongoClient = mongodb.MongoClient;
     const dbName = dbs + '_ipkit';
@@ -361,14 +432,14 @@ async function saveDataToDB(data, fileName,cb) {
         const collection = db.collection(dbCollection);
 
         // Insert some documents
-        collection.insertMany([{ "keydata": data, "url": fileName }], function (err, result) {
+        collection.insertMany([{ "keydata": data, "url": fileName, language: lan }], function (err, result) {
             assert.equal(err, null);
             assert.equal(1, result.result.n);
             assert.equal(1, result.ops.length);
             console.log("Inserted 1 documents into the collection");
-            
+
             client.close();
-            if(cb) cb('done');
+            if (cb) cb('done');
         });
     });
 
