@@ -383,8 +383,8 @@ const env = {
 
 
 
-const dbs = "campusdblanguage";
-const collection = "campusdoclanguage";
+const dbs = "campusdbtest";
+const collection = "campusdoctest";
 
 
 async function saveDataToDBAfterProcess(data, fileName, cb, lan) {
