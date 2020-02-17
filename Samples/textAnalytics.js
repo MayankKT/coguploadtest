@@ -24,8 +24,8 @@ const env = {
 }
 
 
-const dbs = "campusdbtest";
-const collection = "campusdoctest";
+const dbs = "campusdblanguage";
+const collection = "campusdoclanguage";
 
 
 const dbNamesow = dbs + '_sow';
