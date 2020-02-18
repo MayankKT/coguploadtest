@@ -27,6 +27,7 @@ const env = {
 const dbs = "campusdbtest";
 const collection = "campusdoctest";
 
+
 const dbNamesow = dbs + '_sow';
 const dbNameipkit = dbs + '_ipkit';;
 
@@ -70,7 +71,7 @@ exports.getDocuments = function (callBack, param) {
                     var data = docs.filter(obj => obj.keydata.find(o => o.toLowerCase().includes(sowKey1[i].toLowerCase())) != undefined)
                     if (data && data.length > 0) {
                         data.forEach(m => {
-                            console.log('M:',m);
+                            console.log('M:', m);
                             if (retDocs.find(o => o.url.toLowerCase() == m.url.toLowerCase()) == undefined) {
                                 let objReturn = {}
                                 objReturn["keydata"] = m.keydata;
@@ -156,9 +157,25 @@ exports.getSowDocuments = function (callBack, param) {
             docs.forEach(obj => {
                 let objReturn = {}
                 if (param.trim().toLowerCase() == '' || obj.keydata.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase()))) {
+
+                    let ratingDetails = [];
+                    let keyPhases = obj.data;
+                    if (keyPhases && keyPhases.length > 0) {
+                        let keyPhasesObj = JSON.parse(keyPhases);
+                        if (keyPhasesObj && keyPhasesObj.keyPhrases) {                          
+                            let keys = Object.keys(keyPhasesObj.keyPhrases);
+                            keys.forEach(obj => {
+                              let key =  obj ? obj:'';
+                              let textscore = keyPhasesObj && keyPhasesObj.keyPhrases[obj] && keyPhasesObj.keyPhrases[obj].length > 0 ? keyPhasesObj.keyPhrases[obj][0].replace('textscore:',''):0;
+                              let termgroup =  keyPhasesObj && keyPhasesObj.keyPhrases[obj] && keyPhasesObj.keyPhrases[obj].length > 1 ? keyPhasesObj.keyPhrases[obj][1].replace('termgroup:',''):0;
+                              ratingDetails.push({key:key,textscore:textscore,termgroup:termgroup});
+                            });
+                        }
+                    }
                     objReturn["keydata"] = obj.keydata;
                     objReturn["url"] = obj.url;
                     objReturn["language"] = obj.language ? obj.language : '';
+                    objReturn["ratingDetails"] = ratingDetails;
                     retDocs.push(objReturn);
                 }
             })
