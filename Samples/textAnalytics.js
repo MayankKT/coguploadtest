@@ -198,3 +198,82 @@ exports.getSowDocuments = function (callBack, param) {
     });
 }
 
+
+
+//================Data Science==============Section
+
+exports.getDSSowDocuments = function (callBack, param) {
+    var MongoClient = mongodb.MongoClient;
+    const dbs1 = "campusdb";
+    const collection1 = "campusdoc";
+
+
+    const dbNamesow1 = dbs1 + '_sow';
+    const dbcollectionsow1 = collection1 + '_sow';
+    // Connection URL
+    //const url = 'mongodb://localhost:27017';
+    const url = `mongodb://${env.dbName}:${env.key}@${env.dbName}.documents.azure.com:10255/?ssl=true&replicaSet=globaldb`
+
+    //const url ='mongodb://3bec7eb3-0ee0-4-231-b9ee:5kYSe6xHjwJ97ooQYn9xbRoeSTXjfxzJjHH2eYTwfTfJclGKWr1i80JeTqn2p3nki89roFPJhKe8VbOklKa0IQ%3D%3D@3bec7eb3-0ee0-4-231-b9ee.documents.azure.com:10255/?ssl=true'
+
+    // Database Name
+    //const dbName = 'mytestdb';
+    //const dbName = 'campusdocinfonew';
+    // Use connect method to connect to the server
+    MongoClient.connect(url, function (err, client) {
+        //console.log('t', err);
+        assert.equal(null, err);
+        console.log("Connected successfully to server");
+
+        const db = client.db(dbNamesow1);
+        // Get the documents collection
+        //const collection = db.collection('myResumeDataTest');
+        const collection = db.collection(dbcollectionsow1);
+
+        // var regex = new RegExp(".*" + param + "*");
+        //console.log('a :', regex);
+        // "keydata": regex
+        var d = collection.find({});
+        //var d =  collection.find({}, { "_id": 0 });
+
+        //let returnObj = [];
+        d.toArray(function (err, docs) {
+            // console.log('docs',docs);
+            let retDocs = docs;//[];
+            // docs.forEach(obj => {
+            //     if (obj.key_words) {
+            //         let keywords = Object.keys(obj.key_words);
+            //         let objReturn = {}
+            //         if (!param || (param.trim().toLowerCase() == '' || keywords.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase())))) {
+            //             objReturn["keydata"] = keywords.join(", ");
+            //             objReturn["url"] = obj.SOW_File_name;
+            //             objReturn["language"] = obj.Language ? obj.Language : '';
+            //             objReturn["ratingDetails"] = obj.key_words;
+            //             retDocs.push(objReturn);
+            //         }
+            //     }
+            // })
+
+
+            // console.log('docs',docs);
+            assert.equal(err, null);
+            // console.log('param : ', param);
+            console.log("Found the following records");
+            // if (docs && docs.length > 0) {
+            //     docs.forEach((obj, index) => {
+            //         if (obj.keydata.find(obj => obj.toLowerCase().includes(param.toLowerCase())) != undefined)
+            //             returnObj.push(obj)
+            //     })
+            // }
+            callBack(retDocs);
+            client.close();
+        });
+
+
+    });
+}
+
+
+
+//================Data Science==============Section End
+
