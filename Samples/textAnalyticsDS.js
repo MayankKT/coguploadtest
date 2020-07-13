@@ -153,20 +153,20 @@ exports.getDSSowDocuments = function (callBack, param) {
         //let returnObj = [];
         d.toArray(function (err, docs) {
             // console.log('docs',docs);
-            let retDocs = [];
-            docs.forEach(obj => {
-                if (obj.key_words) {
-                    let keywords = Object.keys(obj.key_words);
-                    let objReturn = {}
-                    if (!param || (param.trim().toLowerCase() == '' || keywords.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase())))) {
-                        objReturn["keydata"] = keywords.join(", ");
-                        objReturn["url"] = obj.SOW_File_name;
-                        objReturn["language"] = obj.Language ? obj.Language : '';
-                        objReturn["ratingDetails"] = obj.key_words;
-                        retDocs.push(objReturn);
-                    }
-                }
-            })
+            let retDocs = docs;//[];
+            // docs.forEach(obj => {
+            //     if (obj.key_words) {
+            //         let keywords = Object.keys(obj.key_words);
+            //         let objReturn = {}
+            //         if (!param || (param.trim().toLowerCase() == '' || keywords.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase())))) {
+            //             objReturn["keydata"] = keywords.join(", ");
+            //             objReturn["url"] = obj.SOW_File_name;
+            //             objReturn["language"] = obj.Language ? obj.Language : '';
+            //             objReturn["ratingDetails"] = obj.key_words;
+            //             retDocs.push(objReturn);
+            //         }
+            //     }
+            // })
 
 
             // console.log('docs',docs);
@@ -176,7 +176,7 @@ exports.getDSSowDocuments = function (callBack, param) {
             // if (docs && docs.length > 0) {
             //     docs.forEach((obj, index) => {
             //         if (obj.keydata.find(obj => obj.toLowerCase().includes(param.toLowerCase())) != undefined)
-            //             returnObj.push(obj)   
+            //             returnObj.push(obj)
             //     })
             // }
             callBack(retDocs);
