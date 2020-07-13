@@ -174,7 +174,7 @@ app.post('/uploadDS_Sow', function (req, res) {
 app.get('/DS_SOWDocs', function (req, res) {
     try {
         console.log('start');
-        let param = req.query.hobbies
+        let param = req.query.hobbies;
         getDSSowDocuments((data) => {
             res.send(data);
         }, param)
