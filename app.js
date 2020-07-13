@@ -6,7 +6,7 @@ const path = require("path");
 
 const fs = require("fs");
 var multer = require('multer');
-var { getDocuments, getSowDocuments } = require('./Samples/textAnalytics');
+var { getDocuments, getSowDocuments,getDSSowDocuments } = require('./Samples/textAnalytics');
 
 var { getData } = require('./uploaddata.js');
 
