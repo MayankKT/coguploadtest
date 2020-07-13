@@ -172,9 +172,18 @@ app.post('/uploadDS_Sow', function (req, res) {
 
 
 app.get('/DS_SOWDocs', function (req, res) {
-   res.send('test');
+   
+    try {
+        console.log('start');
+        let param = req.query.hobbies
+        getDSSowDocuments((data) => {
+            res.send(data);
+        }, param)
+    }
+    catch (e) {
+        res.send('Error : ');
+    }
 });
-
 
 //===============End Data Science=============Section
 
