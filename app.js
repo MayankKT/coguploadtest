@@ -134,6 +134,59 @@ app.post('/uploadipkit', function (req, res) {
 }
 });
 
+//================Data Science==============Section
+
+app.post('/uploadDS_Sow', function (req, res) { 
+
+    try {
+
+        let fileName = req.query.filetype;
+        if (fileName) {
+            console.log('req.query : ')
+            upload(req, res, function (err) {
+                if (err instanceof multer.MulterError) {
+                    console.log('1 : ')
+                    return res.status(500).json(err)
+                } else if (err) {
+                       console.log('2 : ')
+                    return res.status(500).json(err)
+                }
+                else {
+                    console.log('req.query : ')
+                    uploadDSDoc('sow', fileName, (msg) => {
+                        return res.status(200).send(fileName + " uploaded successfully...");
+                    });
+                }
+
+
+            })
+        }
+        else {
+            return res.status(500).send("Please uplod a file")
+        }
+
+    } catch (e) {
+        return res.status(500).json(e)
+    }
+});
+
+
+app.get('/DS_SOWDocs', function (req, res) {
+    try {
+        console.log('start');
+        let param = req.query.hobbies
+        getDSSowDocuments((data) => {
+            res.send(data);
+        }, param)
+    }
+    catch (e) {
+        res.send(e);
+    }
+});
+
+
+//===============End Data Science=============Section
+
 
 
 app.listen(port, () => { console.log('Server is running on port : ', port) });
