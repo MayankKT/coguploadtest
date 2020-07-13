@@ -154,19 +154,20 @@ exports.getDSSowDocuments = function (callBack, param) {
         d.toArray(function (err, docs) {
             // console.log('docs',docs);
             let retDocs = [];
-            if (obj.key_words && obj.key_words.length > 0) {
-                let keywords =JSON.parse(obj.key_words);
-                docs.forEach(obj => {
+            docs.forEach(obj => {
+                if (obj.key_words) {
+                    let keywords = Object.keys(obj.key_words);
                     let objReturn = {}
-                    if (param.trim().toLowerCase() == '' || keywords.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase()))) {
+                    if (!param || (param.trim().toLowerCase() == '' || keywords.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase())))) {
                         objReturn["keydata"] = keywords.join(", ");
                         objReturn["url"] = obj.SOW_File_name;
                         objReturn["language"] = obj.Language ? obj.Language : '';
-                        objReturn["ratingDetails"] = JSON.parse(obj.key_words);
+                        objReturn["ratingDetails"] = obj.key_words;
                         retDocs.push(objReturn);
                     }
-                })
-            }
+                }
+            })
+
 
             // console.log('docs',docs);
             assert.equal(err, null);
