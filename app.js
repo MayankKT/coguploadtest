@@ -181,7 +181,7 @@ app.get('/DS_SOWDocs', function (req, res) {
         }, param)
     }
     catch (e) {
-       res.send('Error : ',JSON.stringify(e));
+       res.send(('Error : '+e.message));
     }
 });
 
