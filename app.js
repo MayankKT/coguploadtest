@@ -112,9 +112,9 @@ app.post('/uploadsow', function (req, res) {
 
 
 
-app.post('/uploadipkit', function (req, res) {
-    
-    try {
+app.post('/uploadipkit', function (req, res) {  
+    try 
+    {
     //console.log('upload', req);
     let fileName = req.query.filetype;
     upload(req, res, function (err) {
