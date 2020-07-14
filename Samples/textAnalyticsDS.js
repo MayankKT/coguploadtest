@@ -122,7 +122,7 @@ exports.getDocuments = function (callBack, param) {
 
 
 
-exports.getDSSowDocuments = function (callBack, param) {
+exports.getDSSowDocuments = function (callBack, param,crmID) {
     var MongoClient = mongodb.MongoClient;
     // Connection URL
     //const url = 'mongodb://localhost:27017';
@@ -154,18 +154,25 @@ exports.getDSSowDocuments = function (callBack, param) {
         d.toArray(function (err, docs) {
             // console.log('docs',docs);
             let retDocs = [];
-             docs.forEach(obj => {
-                 if (obj.key_words) {
-                     let keywords = Object.keys(obj.key_words);
-                   let objReturn = {}
-                    if (!param || (param.trim().toLowerCase() == '' || keywords.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase())))) {
+            docs.forEach(obj => {
+                if (obj.key_words) {
+                    let keywords = Object.keys(obj.key_words);
+                    let objReturn = {}
+                    console.log('crmID : '+(!crmID || (crmID.trim().toLowerCase() == '' || obj.crmID.toLowerCase().includes(crmID.toLowerCase())))                  
+                    );
+                    console.log('param : '+(!param || (param.trim().toLowerCase() == '' || keywords.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase()))))
+                    );
+                    if ((!param || (param.trim().toLowerCase() == '' || keywords.find(obj1 => obj1.toLowerCase().includes(param.toLowerCase()))))
+                    && (!crmID || (crmID.trim().toLowerCase() == '' || obj.crmID.toLowerCase().includes(crmID.toLowerCase())))                  
+                    ) {
                         objReturn["keydata"] = keywords.join(", ");
                         objReturn["url"] = obj.SOW_File_name;
+                        objReturn["crmID"] = obj.crmID;
                         objReturn["language"] = obj.Language ? obj.Language : '';
-                       objReturn["ratingDetails"] = obj.key_words;
+                        objReturn["ratingDetails"] = obj.key_words;
                         retDocs.push(objReturn);
-                   }
-               }
+                    }
+                }
             })
 
 
