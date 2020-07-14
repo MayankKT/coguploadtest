@@ -178,15 +178,32 @@ app.get('/DS_SOWDocs', function (req, res) {
    
     try {
         console.log('start');
-        let param = req.query.hobbies
+        let param = req.query.hobbies;
+        let crmID = req.query.crmID ;
+        console.log('Query :',param,crmID);
         getDSSowDocuments((data) => {
             res.send(data);
-        }, param)
+        }, param,crmID)
     }
     catch (e) {
-       res.send(('Error : '+e.message));
+        res.send('Error : ',JSON.stringify(e));
     }
 });
+
+app.get('/downloadDSSow', function (req, res) {
+    console.log('download');
+    let file = './Samples/data/' + req.query.file;
+
+    var filename = path.basename(file);
+    var mimetype = mime.lookup(file);
+
+    res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+    res.setHeader('Content-type', mimetype);
+
+    var filestream = fs.createReadStream(file);
+    filestream.pipe(res);
+});
+
 
 //===============End Data Science=============Section
 
