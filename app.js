@@ -9,7 +9,7 @@ var multer = require('multer');
 var { getDocuments, getSowDocuments } = require('./Samples/textAnalytics');
 
 
-var { getDSSowDocuments} = require('./Samples/textAnalyticsDS');
+var { getDSSowDocuments, getDSSowDocumentsNew, getDSSowDocumentsCommentSave} = require('./Samples/textAnalyticsDS');
 
 var { getData } = require('./uploaddata.js');
 
@@ -139,7 +139,8 @@ app.post('/uploadipkit', function (req, res) {
 
 //================Data Science==============Section
 
-app.post('/uploadDS_Sow', function (req, res) { 
+app.post('/uploadDS_Sow', function (req, res) {
+
 
     try {
 
@@ -151,7 +152,7 @@ app.post('/uploadDS_Sow', function (req, res) {
                     console.log('1 : ')
                     return res.status(500).json(err)
                 } else if (err) {
-                       console.log('2 : ')
+                    console.log('2 : ')
                     return res.status(500).json(err)
                 }
                 else {
@@ -175,18 +176,34 @@ app.post('/uploadDS_Sow', function (req, res) {
 
 
 app.get('/DS_SOWDocs', function (req, res) {
-   
+
     try {
         console.log('start');
         let param = req.query.hobbies;
-        let crmID = req.query.crmID ;
-        console.log('Query :',param,crmID);
+        let crmID = req.query.crmID;
+        console.log('Query :', param, crmID);
         getDSSowDocuments((data) => {
             res.send(data);
-        }, param,crmID)
+        }, param, crmID)
     }
     catch (e) {
-        res.send('Error : ',JSON.stringify(e));
+        res.send('Error : ', JSON.stringify(e));
+    }
+});
+
+app.get('/DS_SOWDocsNew', function (req, res) {
+
+    try {
+        console.log('start');
+        let param = req.query.hobbies;
+        let crmID = req.query.crmID;
+        console.log('Query :', param, crmID);
+        getDSSowDocumentsNew((data) => {
+            res.send(data);
+        }, param, crmID)
+    }
+    catch (e) {
+        res.send('Error : ', JSON.stringify(e));
     }
 });
 
@@ -204,7 +221,29 @@ app.get('/downloadDSSow', function (req, res) {
     filestream.pipe(res);
 });
 
+app.get('/SaveComment', (req, res) => {
 
+    try {
+        console.log('SaveComment');
+        let id = req.query.id;
+        let key = req.query.key;
+        let data = req.query.data;
+        if (data && data.length > 0) {
+            console.log('Key',key);
+            
+            console.log('Data',JSON.parse(data));
+            getDSSowDocumentsCommentSave((data) => {
+                res.send(data);
+            }, id, key, JSON.parse(data));
+        } else {
+            res.send('data is blank');
+        }
+    }
+    catch (e) {
+        res.send('Error : ', JSON.stringify(e));
+    }
+
+})
 //===============End Data Science=============Section
 
 
