@@ -290,10 +290,15 @@ exports.getDSSowDocumentsCommentSave = function (callBack, id, key, data) {
         let keys = Object.keys(data);
         if (keys && keys.length > 0) {
             keys.forEach(obj => {
-                if (!data[obj] || data[obj].length <= 0)
+                if (!data[obj] || ((!data[obj]["Remark"] || data[obj]["Remark"].length <= 0) &&
+                    (data[obj]["InActive"] == undefined || data[obj]["InActive"] == false)
+                )) {
                     delete data[obj];
+                }
             })
         }
+
+
 
         if (key == "Key_words_tf_idf_feed")
             collection.update({ _id: id }, { $set: { "Key_words_tf_idf_feed": data } });
@@ -301,6 +306,10 @@ exports.getDSSowDocumentsCommentSave = function (callBack, id, key, data) {
             collection.update({ _id: id }, { $set: { "Trigram_model_feed": data } });
         else if (key == "Azure_congnitive_services_feed")
             collection.update({ _id: id }, { $set: { "Azure_congnitive_services_feed": data } });
+
+
+
+
         //var d =  collection.find({}, { "_id": 0 });
 
         //let returnObj = [];
