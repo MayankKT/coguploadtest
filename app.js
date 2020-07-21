@@ -11,6 +11,8 @@ var { getDocuments, getSowDocuments } = require('./Samples/textAnalytics');
 
 var { getDSSowDocuments, getDSSowDocumentsNew, getDSSowDocumentsCommentSave} = require('./Samples/textAnalyticsDS');
 
+var { getDataScienceSOWOnLoad, getDataScienceSOW,saveDataScienceSOW } = require('./Samples/DataScienceSOW');
+
 var { getData } = require('./uploaddata.js');
 
 app.use(cors());
@@ -248,5 +250,67 @@ app.get('/SaveComment', (req, res) => {
 //===============End Data Science=============Section
 
 
+
+
+//===============Data Science Version=================Section
+app.get('/DataScienceSOWOnLoad', function (req, res) {
+
+    try {
+        console.log('start');
+        let param = req.query.hobbies;
+        let crmID = req.query.crmID;
+        console.log('Query :', param, crmID);
+        getDataScienceSOWOnLoad((data) => {
+            res.send(data);
+        }, param, crmID,)
+    }
+    catch (e) {
+        res.send('Error : ', JSON.stringify(e));
+    }
+});
+
+app.get('/DataScienceSOW', function (req, res) {
+
+    try {
+        console.log('start');
+        let param = req.query.hobbies;
+        let crmID = req.query.crmID;
+        let collectionID = req.query.collectionID;
+        console.log('Query :', param, crmID,collectionID);
+        getDataScienceSOW((data) => {
+            res.send(data);
+        }, param, crmID,collectionID)
+    }
+    catch (e) {
+        res.send('Error : ', JSON.stringify(e));
+    }
+});
+
+
+app.get('/SaveDataScienceSOW', (req, res) => {
+
+    try {
+        console.log('SaveComment');
+        let id = req.query.id;
+        let key = req.query.key;
+        let data = req.query.data;
+        let collectionID = req.query.collectionID;
+
+        console.log(' SaveDataScienceSOW Query :', id, key,collectionID);
+       
+        if (data && data.length > 0) {
+            saveDataScienceSOW((data) => {
+                res.send(data);
+            }, id, key, JSON.parse(data),collectionID);
+        } else {
+            res.send('data is blank');
+        }
+    }
+    catch (e) {
+        res.send('Error : ', JSON.stringify(e));
+    }
+
+})
+//==============End Data Science Version===============
 
 app.listen(port, () => { console.log('Server is running on port : ', port) });
