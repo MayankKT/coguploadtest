@@ -63,18 +63,18 @@ const getDataScienceSOWByVer = function (callback, param, crmID, collectionID) {
             d.each((err, obj) => {
                 // console.log('docs',docs);
                 if (obj != null) {
-                    let objReturn = {}
-                    objReturn["url"] = obj.SOW_File_name;
-                    objReturn["id"] = obj._id;
-                    objReturn["crmID"] = obj.crmID;
-                    objReturn["Trigram_model"] = obj.Trigram_model;
-                    objReturn["key_words_tf_idf"] = obj.key_words_tf_idf;
-                    objReturn["Azure_congnitive_services"] = obj.Azure_congnitive_services;
+                    // let objReturn = {}
+                    // objReturn["url"] = obj.SOW_File_name;
+                    // objReturn["id"] = obj._id;
+                    // objReturn["crmID"] = obj.crmID;
+                    // objReturn["Trigram_model"] = obj.Trigram_model;
+                    // objReturn["key_words_tf_idf"] = obj.key_words_tf_idf;
+                    // objReturn["Azure_congnitive_services"] = obj.Azure_congnitive_services;
 
-                    objReturn["Trigram_model_feed"] = obj.Trigram_model_feed;
-                    objReturn["Key_words_tf_idf_feed"] = obj.Key_words_tf_idf_feed;
-                    objReturn["Azure_congnitive_services_feed"] = obj.Azure_congnitive_services_feed;
-                    retDocs.push(objReturn);
+                    // objReturn["Trigram_model_feed"] = obj.Trigram_model_feed;
+                    // objReturn["Key_words_tf_idf_feed"] = obj.Key_words_tf_idf_feed;
+                    // objReturn["Azure_congnitive_services_feed"] = obj.Azure_congnitive_services_feed;
+                    retDocs.push(obj);
                 } else {
                     assert.equal(err, null);
                     console.log("Found the following records");
@@ -127,6 +127,7 @@ const getDataScienceSOWVersions = function (callback) {
                     objReturn["CollectionName"] = obj.CollectionName;
                     objReturn["Text"] = obj.Text;
                     objReturn["Remark"] = obj.Remark;
+                    objReturn["DataKey"] = obj.DataKey;
                     retDocs.push(objReturn);
                 }
                 else {
@@ -153,16 +154,16 @@ exports.getDataScienceSOWOnLoad = function (callBack, param, crmID) {
     getDataScienceSOWVersions((retDocVersions) => {
         console.log('Result : ', retDocVersions)
         if (retDocVersions && retDocVersions.length > 0) {
-            let collectionIDObj = retDocVersions[retDocVersions.length-1];
+            let collectionIDObj = retDocVersions[retDocVersions.length - 1];
             if (collectionIDObj && collectionIDObj.CollectionName) {
-                getDataScienceSOWByVer((retDocs)=>{
+                getDataScienceSOWByVer((retDocs) => {
                     let myData = {}
                     myData["VersionDet"] = retDocVersions;
                     myData["SOWData"] = retDocs;
                     callBack(myData);
-                }                
-                ,param, crmID, collectionIDObj.CollectionName);
-               
+                }
+                    , param, crmID, collectionIDObj.CollectionName);
+
             }
             else
                 callBack('No Data Found');
@@ -175,10 +176,10 @@ exports.getDataScienceSOWOnLoad = function (callBack, param, crmID) {
 
 
 exports.getDataScienceSOW = function (callBack, param, crmID, collectionID) {
-    getDataScienceSOWByVer((retDocs)=>{
+    getDataScienceSOWByVer((retDocs) => {
         callBack(retDocs);
-    }                
-    ,param, crmID, collectionID);
+    }
+        , param, crmID, collectionID);
 }
 
 exports.saveDataScienceSOW = function (callBack, id, key, data, collectionID) {
@@ -219,14 +220,10 @@ exports.saveDataScienceSOW = function (callBack, id, key, data, collectionID) {
         }
 
 
-
-        if (key == "Key_words_tf_idf_feed")
-            collection.update({ _id: id }, { $set: { "Key_words_tf_idf_feed": data } });
-        else if (key == "Trigram_model_feed")
-            collection.update({ _id: id }, { $set: { "Trigram_model_feed": data } });
-        else if (key == "Azure_congnitive_services_feed")
-            collection.update({ _id: id }, { $set: { "Azure_congnitive_services_feed": data } });
-
+        let mykey = key;
+        let updateData = {}
+        updateData[mykey] = data;
+        collection.update({ _id: id }, { $set: updateData });
 
 
 
@@ -247,3 +244,43 @@ exports.saveDataScienceSOW = function (callBack, id, key, data, collectionID) {
     });
 }
 
+
+
+
+
+exports.saveData = function (callBack) {
+
+    var MongoClient = mongodb.MongoClient;
+    // Connection URL
+    //const url = 'mongodb://localhost:27017';
+    const url = `mongodb://${env.dbName}:${env.key}@${env.dbName}.documents.azure.com:10255/?ssl=true&replicaSet=globaldb`
+
+    // Use connect method to connect to the server
+    MongoClient.connect(url, function (err, client) {
+        assert.equal(null, err);
+        console.log("Connected successfully to server");
+
+        const db = client.db(dbs);
+        // Get the documents collection
+        //const collection = db.collection('myResumeDataTest');
+        const collection = db.collection("DocKeyVer4");
+
+
+        let data = []
+        console.log('data', data);
+        collection.insertMany(data
+
+
+
+            , function (err, result) {
+                // assert.equal(err, null);
+                // assert.equal(1, result.result.n);
+                // assert.equal(1, result.ops.length);
+                console.log("Inserted 1 documents into the collection");
+                client.close();
+                if (callBack) callBack('done');
+            });
+
+
+    });
+}
