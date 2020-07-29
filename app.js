@@ -11,7 +11,7 @@ var { getDocuments, getSowDocuments } = require('./Samples/textAnalytics');
 
 var { getDSSowDocuments, getDSSowDocumentsNew, getDSSowDocumentsCommentSave} = require('./Samples/textAnalyticsDS');
 
-var { getDataScienceSOWOnLoad, getDataScienceSOW,saveDataScienceSOW } = require('./Samples/DataScienceSOW');
+var { getDataScienceSOWOnLoad, getDataScienceSOW, saveDataScienceSOW, saveData } = require('./Samples/DataScienceSOW');
 
 var { getData } = require('./uploaddata.js');
 
@@ -262,7 +262,7 @@ app.get('/DataScienceSOWOnLoad', function (req, res) {
         console.log('Query :', param, crmID);
         getDataScienceSOWOnLoad((data) => {
             res.send(data);
-        }, param, crmID,)
+        }, param, crmID)
     }
     catch (e) {
         res.send('Error : ', JSON.stringify(e));
@@ -276,10 +276,10 @@ app.get('/DataScienceSOW', function (req, res) {
         let param = req.query.hobbies;
         let crmID = req.query.crmID;
         let collectionID = req.query.collectionID;
-        console.log('Query :', param, crmID,collectionID);
+        console.log('Query :', param, crmID, collectionID);
         getDataScienceSOW((data) => {
             res.send(data);
-        }, param, crmID,collectionID)
+        }, param, crmID, collectionID)
     }
     catch (e) {
         res.send('Error : ', JSON.stringify(e));
@@ -296,12 +296,12 @@ app.get('/SaveDataScienceSOW', (req, res) => {
         let data = req.query.data;
         let collectionID = req.query.collectionID;
 
-        console.log(' SaveDataScienceSOW Query :', id, key,collectionID);
-       
+        console.log(' SaveDataScienceSOW Query :', id, key, collectionID);
+
         if (data && data.length > 0) {
             saveDataScienceSOW((data) => {
                 res.send(data);
-            }, id, key, JSON.parse(data),collectionID);
+            }, id, key, JSON.parse(data), collectionID);
         } else {
             res.send('data is blank');
         }
@@ -312,5 +312,19 @@ app.get('/SaveDataScienceSOW', (req, res) => {
 
 })
 //==============End Data Science Version===============
+app.get('/saveData', (req, res) => {
+
+    try {
+        console.log('SaveComment');
+        saveData((data) => {
+            res.send(data);
+        });
+
+    }
+    catch (e) {
+        res.send('Error : ', JSON.stringify(e));
+    }
+
+})
 
 app.listen(port, () => { console.log('Server is running on port : ', port) });
