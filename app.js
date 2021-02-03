@@ -298,13 +298,9 @@ app.get('/SaveDataScienceSOWRemark', (req, res) => {
 
         console.log(' SaveDataScienceSOWRemark Query :', id, collectionID);
 
-        if (data) {
-            saveDataScienceSOWRemark((data) => {
+        saveDataScienceSOWRemark((data) => {
                 res.send(data);
             }, id, data, collectionID);
-        } else {
-            res.send('data is blank');
-        }
     }
     catch (e) {
         res.send('Error : ', JSON.stringify(e));
