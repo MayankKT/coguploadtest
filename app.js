@@ -11,7 +11,7 @@ var { getDocuments, getSowDocuments } = require('./Samples/textAnalytics');
 
 var { getDSSowDocuments, getDSSowDocumentsNew, getDSSowDocumentsCommentSave} = require('./Samples/textAnalyticsDS');
 
-var { getDataScienceSOWOnLoad, getDataScienceSOW, saveDataScienceSOW, saveData } = require('./Samples/DataScienceSOW');
+var { getDataScienceSOWOnLoad, getDataScienceSOW, saveDataScienceSOW, saveData, saveDataScienceSOWRemark } = require('./Samples/DataScienceSOW');
 
 var { getData } = require('./uploaddata.js');
 
@@ -285,6 +285,31 @@ app.get('/DataScienceSOW', function (req, res) {
         res.send('Error : ', JSON.stringify(e));
     }
 });
+
+
+app.get('/SaveDataScienceSOWRemark', (req, res) => {
+
+    try {
+        console.log('SaveComment');
+        let id = req.query.id;
+        let data = req.query.data;
+        let collectionID = req.query.collectionID;
+
+        console.log(' SaveDataScienceSOWRemark Query :', id, collectionID);
+
+        if (data && data.length > 0) {
+            saveDataScienceSOWRemark((data) => {
+                res.send(data);
+            }, id, data, collectionID);
+        } else {
+            res.send('data is blank');
+        }
+    }
+    catch (e) {
+        res.send('Error : ', JSON.stringify(e));
+    }
+
+})
 
 
 app.get('/SaveDataScienceSOW', (req, res) => {
