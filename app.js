@@ -298,7 +298,7 @@ app.get('/SaveDataScienceSOWRemark', (req, res) => {
 
         console.log(' SaveDataScienceSOWRemark Query :', id, collectionID);
 
-        if (data && data.length > 0) {
+        if (data) {
             saveDataScienceSOWRemark((data) => {
                 res.send(data);
             }, id, data, collectionID);
