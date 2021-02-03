@@ -284,3 +284,41 @@ exports.saveData = function (callBack) {
 
     });
 }
+
+
+
+exports.saveDataScienceSOWRemark = function (callBack, id, data, collectionID) {
+  var MongoClient = mongodb.MongoClient;
+  // Connection URL
+  //const url = 'mongodb://localhost:27017';
+  const url = `mongodb://${env.dbName}:${env.key}@${env.dbName}.documents.azure.com:10255/?ssl=true&replicaSet=globaldb`
+
+  //const url ='mongodb://3bec7eb3-0ee0-4-231-b9ee:5kYSe6xHjwJ97ooQYn9xbRoeSTXjfxzJjHH2eYTwfTfJclGKWr1i80JeTqn2p3nki89roFPJhKe8VbOklKa0IQ%3D%3D@3bec7eb3-0ee0-4-231-b9ee.documents.azure.com:10255/?ssl=true'
+
+  // Database Name
+  //const dbName = 'mytestdb';
+  //const dbName = 'campusdocinfonew';
+  // Use connect method to connect to the server
+  MongoClient.connect(url, function (err, client) {
+    //console.log('t', err);
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+
+    const db = client.db(dbs);
+    // Get the documents collection
+    //const collection = db.collection('myResumeDataTest');
+    const collection = db.collection(collectionID);
+
+    let updateData = {}
+       
+    updateData["remark"] = data;
+    console.log("updated : ", updateData, " ID : ", id)
+    collection.update({ _id: id }, { $set: updateData });
+
+
+    assert.equal(err, null);
+    console.log("Saved Successfully");
+    callBack('Saved Successfully');
+    client.close();
+  });
+}
